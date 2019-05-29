@@ -79,100 +79,7 @@ public class BeamPiRunner {
         });
     }
 
-    public static PCollection<KV<String, Double>> generatePiWorkflow(PCollection<PiInstruction> pIn){
-        PCollection<KV<String, Double>> piOut=null;
 
-
-        PCollection<BeamCalcTerm<PI_Term> > calcOut =pIn.apply("BeamCalcTerm",
-                ParDo.of(
-                        new DoFn<PiInstruction, BeamCalcTerm<PI_Term>>() {
-                            @ProcessElement
-                            public void processElement(@Element PiInstruction c, OutputReceiver< BeamCalcTerm<PI_Term> > out) {
-                                for (int i=0;i<c.numOfSteps;i++) {
-                                    PI_Term t = PiInfiniteSeriesFactory.createTerm(c.SeriesName,i);
-                                    BeamCalcTerm<PI_Term> p = BeamCalcTerm.of(c.id,t);
-                                    assert(p.term!=null);
-                                    out.output(p);
-                                }
-                                LOGGER.debug("Setup:"+c.id+" Seriesname:"+c.SeriesName+" steps:"+c.numOfSteps);
-                            }
-                        }
-                )
-        );
-        final PCollection< KV<String, PI_FinalCalc> > pFinalStep = pIn.apply(
-                ParDo.of(
-                        new DoFn<PiInstruction, KV<String, PI_FinalCalc> >(){
-                            @ProcessElement
-                            public void processElement(@Element PiInstruction c, OutputReceiver < KV <String, PI_FinalCalc> > out ){
-                                PI_FinalCalc finalCalc=PiInfiniteSeriesFactory.getFinalCalc(c.SeriesName,c.numOfSteps);
-                                out.output( KV.of(c.id, finalCalc) );
-                            }
-                        }
-                )
-
-        );
-        PCollection< BeamCalcTerm<Double> > pOut=calcOut.apply("Calculate_PiTerms",
-                ParDo.of(
-                        new DoFn< BeamCalcTerm<PI_Term>, BeamCalcTerm<Double> >() {
-                            @ProcessElement
-                            public void processElement(@Element BeamCalcTerm<PI_Term> t, OutputReceiver< BeamCalcTerm<Double> > out){
-
-                                Optional< BeamCalcTerm<PI_Term> > tt = Optional.ofNullable(t);
-                                tt.ifPresent(ts->{
-                                    Optional<PI_Term> term = Optional.ofNullable(ts.term);
-                                    if(term.isPresent()) {
-                                        double d = ts.term.calculateTerm();
-
-                                        //BeamCalcTerm<Double> dd = new BeamCalcTerm<Double>();
-                                        //dd.JobKey = t.JobKey;
-                                        //dd.term = d;
-                                        BeamCalcTerm<Double> dd = BeamCalcTerm.of(t.JobKey,d);
-                                        out.output(dd);
-                                    }
-                                    // LOGGER.debug("Grp:"+dd.JobKey+"Term:"+(ts).term.getTerm() +":"+dd.term);
-                                });
-                            }
-                        }
-                ));
-
-        /*
-        PCollection<KV<String, Double> > SumOut = pOut.apply(
-
-                "Map_term", MapElements.via(new SimpleFunction< BeamCalcTerm<Double>, KV<String, Double>>() {
-                    public KV<String, Double> apply(BeamCalcTerm<Double> element) {
-                        return KV.of(element.JobKey, (Double)element.term);
-                    }
-                })
-        ).apply(perKey());
-
-
-        //CoGroup by Key
-        TupleTag<Double> SeriesTag = new TupleTag<>();
-        TupleTag<PI_FinalCalc> finalizeTag = new TupleTag<>();
-        PCollection< KV<String, CoGbkResult> > MergeResult = KeyedPCollectionTuple.of(SeriesTag, SumOut)
-                .and(finalizeTag, pFinalStep)
-                .apply(CoGroupByKey.create());
-
-
-        //Final Pi values
-        PCollection < KV<String, Double> > finalPi= MergeResult.apply(
-                ParDo.of(
-                        new DoFn<KV<String, CoGbkResult>, KV<String, Double>>() {
-                            @ProcessElement
-                            public void processElement(@Element KV<String, CoGbkResult> r, OutputReceiver< KV<String, Double> > out){
-                                Double sumValueItr = r.getValue().getOnly(SeriesTag);
-                                PI_FinalCalc finalCalc = r.getValue().getOnly(finalizeTag);
-                                String k = r.getKey();
-                                double value = finalCalc.finalCalculation(sumValueItr);
-                                out.output( KV.of (k,value) );
-                            }
-                        }
-                )
-        );*/
-
-        piOut=null;
-        return piOut;
-    }
     /**
      * A PTransform that converts a PCollection containing lines of text into a PCollection of
      * formatted word counts.
@@ -227,7 +134,10 @@ public class BeamPiRunner {
 
             );
 
-            PCollection< BeamCalcTerm<Double> > pOut=calcOut.apply("Calculate_PiTerms",
+            PCollection<BeamCalcTerm<PI_Term> > calcOutReshuffleViaRandomKey=calcOut.apply ( "Reshuffle fusion break",Reshuffle.< BeamCalcTerm<PI_Term> > viaRandomKey());
+
+
+            PCollection< BeamCalcTerm<Double> > pOut=calcOutReshuffleViaRandomKey.apply("Calculate_PiTerms",
                     ParDo.of(
                     new DoFn< BeamCalcTerm<PI_Term>, BeamCalcTerm<Double> >() {
                         @ProcessElement

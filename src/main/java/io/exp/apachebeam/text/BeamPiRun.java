@@ -50,7 +50,6 @@ public class BeamPiRun {
 
 
 
-        //PCollection<KV<String, Double>> dC=BeamPiRunner.generatePiWorkflow(pInst);
         PCollection<KV<String, Double>> dC=pInst.apply(new BeamPiRunner.CalculatePiWorkflow());
 
         dC.apply(ParDo.of(
