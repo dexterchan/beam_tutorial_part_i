@@ -62,7 +62,7 @@ public class BeamPiRun {
         ExecutePipelineOptions options = PipelineOptionsFactory.fromArgs(args).withValidation().as(ExecutePipelineOptions.class);
         Pipeline pipeline = Pipeline.create(options);
 
-        PCollection<PiInstruction> piEvents =
+        PCollection<String> piEvents =
                 pipeline
                         .apply(
                                 PubsubIO.readStrings()
@@ -72,7 +72,7 @@ public class BeamPiRun {
                                 "FixedWindows",
                                 Window.<String>into(FixedWindows.of(
                                         windowDuration
-                                ))
+                                )));/*
                                         // We will get early (speculative) results as well as cumulative
                                         // processing of late data.
                                         .triggering(
@@ -84,20 +84,20 @@ public class BeamPiRun {
                                                                 AfterProcessingTime.pastFirstElementInPane()
                                                                         .plusDelayOf(LATE_FIRING)))
                                         .withAllowedLateness(allowedLateness)
-                                        .accumulatingFiredPanes())
-                        .apply("PiInstructionEvent", ParDo.of(new DoFn<String, PiInstruction>() {
-                            @ProcessElement
-                            public void processElement(@Element String element, OutputReceiver<PiInstruction> out){
-                                Optional<PiInstruction> i = Optional.ofNullable(convertStr2Instruction(element));
-                                i.ifPresent(inst -> {
-                                    out.output(inst);
-                                });
-
-                            }
-                        }));
+                                        .accumulatingFiredPanes())*/
 
 
-        PCollection<PiInstruction> pInst=piEvents;
+
+        PCollection<PiInstruction> pInst=piEvents.apply("PiInstructionEvent", ParDo.of(new DoFn<String, PiInstruction>() {
+            @ProcessElement
+            public void processElement(@Element String element, OutputReceiver<PiInstruction> out){
+                Optional<PiInstruction> i = Optional.ofNullable(convertStr2Instruction(element));
+                i.ifPresent(inst -> {
+                    out.output(inst);
+                });
+
+            }
+        }));
 
         //Write into Text file
         PCollection<KV<String, Double>> dC=pInst.apply(new BeamPiRunner.CalculatePiWorkflow());

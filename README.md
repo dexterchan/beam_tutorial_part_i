@@ -1,8 +1,4 @@
-## Run inmemory
-Run command:
-```
-java -classpath beam_part_i-0.1.jar io.exp.apachebeam.inmemory.BeamPiRun
-```
+
 
 ## Direct Runner : Run Text file as I/O
 Build command:
@@ -13,6 +9,23 @@ Run command:
 ```
 java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.text.BeamPiRun --inputFile=./config/test/instruction.dat --output=/tmp/PiTest
 ```
+
+## Direct Runner : Run PubSub as I/O
+Build command:
+```
+gradle -Pdirect clean build
+```
+Run command:
+```
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.pubsub.BeamPiRun --inputTopic=projects/peer2peer/subscriptions/pi_in_sub --outputTopic=projects/peer2peer/topics/pi_out 
+```
+Pubsub injector:
+````
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.injector.PiPubSubInjector <project> <topic> <number of msg>
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.injector.PiPubSubInjector peer2peer pi_in 1
+
+````
+
 
 ## Flink Runner : Run Text file as I/O
 Build command:
@@ -55,8 +68,14 @@ gradle -Pdirect clean build
 ```
 Run command:
 ```
-java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.text.BeamPiRun --inputTopic=pi --outputTopic=pi_out --output=/tmp/PiTest
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.kafka.BeamPiRun --bootStrapServer=localhost:9092 --inputTopic=pi --outputTopic=piut --output=/tmp/PiQueue
 ```
+
+Kafka Injector:
+````
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.kafka.Main.KafkaPublisherMain localhost:9092 1 10 100
+````
+
 
 ## Flink Runner : Run Kafka as I/O
 Build command:
@@ -138,3 +157,10 @@ gradle -Pflink clean build
 export JOB_JAR_TARGET=build/libs/beam_part_i-0.1.jar
 docker build --build-arg job_jar="${JOB_JAR_TARGET}"  -t gcr.io/peer2peer/picalc .
 ````
+
+
+## Run inmemory
+Run command:
+```
+java -classpath beam_part_i-0.1.jar io.exp.apachebeam.inmemory.BeamPiRun
+```

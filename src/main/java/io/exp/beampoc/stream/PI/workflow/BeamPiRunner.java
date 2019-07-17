@@ -14,10 +14,13 @@ import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.transforms.join.CoGbkResult;
 import org.apache.beam.sdk.transforms.join.CoGroupByKey;
 import org.apache.beam.sdk.transforms.join.KeyedPCollectionTuple;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
+import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
 import org.apache.beam.sdk.values.TupleTag;
+import org.joda.time.Duration;
 import org.slf4j.LoggerFactory;
 
 
@@ -267,6 +270,13 @@ public class BeamPiRunner {
             PCollection< KV<String, CoGbkResult> > MergeResult = KeyedPCollectionTuple.of(SeriesTag, SumOut)
                     .and(finalizeTag, pFinalStep)
                     .apply(CoGroupByKey.create());
+            /*
+            .apply(
+                            "FixedWindows",
+                            Window.<  KV<String, CoGbkResult> >into(FixedWindows.of(
+                                    Duration.standardSeconds(10)
+                            )));
+             */
 
             //Final Pi values
             PCollection < KV<String, Double> > finalPi= MergeResult.apply(
