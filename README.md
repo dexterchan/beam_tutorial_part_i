@@ -115,6 +115,13 @@ java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.kafka.BeamPiRun
 --outputTopic=pi_out \
 --filesToStage=/Users/dexter/sandbox/apachebeam/beam_tutorial_part_i/build/libs/beam_part_i-0.1.jar \
 --parallelism=2
+
+
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.pubsub.BeamPiRun \
+--runner=FlinkRunner \
+--flinkMaster=localhost:9081 \
+  --inputTopic=projects/peer2peer/subscriptions/pi_in_sub --outputTopic=projects/peer2peer/topics/pi_out --output=/tmp/PiQueue \
+  --filesToStage=build/libs/beam_part_i-0.1.jar 
 ```
 
 # Flink docker run
@@ -137,7 +144,7 @@ Gradle build
 java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.text.BeamPiRun \
 	--runner=DataflowRunner \
   --project=peer2peer \
-  --inputFile=gs://pi_calculation/instruction.dat --output=gs://pi_calculation/piDtest \
+  --inputFile=gs://pi_calculation/instruction*.dat --output=gs://pi_calculation/piDtest \
   --tempLocation=gs://pi_calculation/temp/ \
   --region=us-central1 
 
@@ -147,6 +154,15 @@ java -classpath target/beam-tutorial-part-bundled-0.1.jar io.exp.apachebeam.text
 	--runner=DataflowRunner \
   --project=peer2peer \
   --inputFile=gs://pi_calculation/instruction.dat --output=gs://pi_calculation/piDtest \
+  --tempLocation=gs://pi_calculation/temp/ \
+  --region=us-central1 
+  
+  
+PubSub  
+java -classpath build/libs/beam_part_i-0.1.jar io.exp.apachebeam.pubsub.BeamPiRun \
+	--runner=DataflowRunner \
+  --project=peer2peer \
+  --inputTopic=projects/peer2peer/subscriptions/pi_in_sub --outputTopic=projects/peer2peer/topics/pi_out --output=/tmp/PiQueue \
   --tempLocation=gs://pi_calculation/temp/ \
   --region=us-central1 
 ```

@@ -3,6 +3,8 @@ package io.exp.beampoc.stream.PI.generate;
 import io.exp.beampoc.stream.PI.Model.PiInstruction;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -80,4 +82,33 @@ public class PiInstructionGeneratorTest {
 
     }
 
+    @Test
+    public void returnFileSeriesName() throws Exception{
+        final int cnt_Total=30;
+        final int maxStep=300;
+        final int numInstruction=10;
+        final String seriesName="Nilakantha";
+
+
+
+
+        for(int ii=0;ii<numInstruction;ii++) {
+            int cnt = 0;
+            FileWriter fw = new FileWriter("build"+ File.separator+"instruction"+ii+".dat");
+
+            Stream<PiInstruction> s = PiInstructionGenerator.randomInstructionStream( cnt_Total,maxStep,seriesName);
+
+            Iterator<PiInstruction> itr=s.iterator();
+            while (itr.hasNext()) {
+                PiInstruction p = itr.next();
+                System.out.println(p.toString());
+                fw.write(p.toString());
+                fw.write("\n");
+                cnt++;
+            }
+
+            fw.close();
+        }
+
+    }
 }
