@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.exp.beampoc.stream.PI.beam.BeamCalcTermTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-09-22T11:28:16" hostname="Dexters-MacBook-Air.local" time="0.0">
+  <properties/>
+  <testcase name="test_of_assignment" classname="io.exp.beampoc.stream.PI.beam.BeamCalcTermTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

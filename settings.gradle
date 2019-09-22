@@ -1,3 +1,5 @@
 rootProject.name = "beam_part_i"
 include 'PIModel'
 include 'KafkaPubSub'
+include 'beamPiDemo'
+
