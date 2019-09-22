@@ -1,4 +1,4 @@
-package io.exp.injector;
+package io.exp.pubsubinjector;
 
 import static org.apache.beam.vendor.guava.v20_0.com.google.common.base.Preconditions.checkNotNull;
 
@@ -16,7 +16,7 @@ import java.io.IOException;
 
 class InjectorUtils {
 
-    private static final String APP_NAME = "injector";
+    private static final String APP_NAME = "pubsubinjector";
 
     /** Builds a new Pubsub client and returns it. */
     public static Pubsub getClient(final HttpTransport httpTransport, final JsonFactory jsonFactory)

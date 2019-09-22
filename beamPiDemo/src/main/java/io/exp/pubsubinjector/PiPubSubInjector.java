@@ -1,4 +1,4 @@
-package io.exp.injector;
+package io.exp.pubsubinjector;
 
 import com.google.api.services.pubsub.Pubsub;
 import com.google.api.services.pubsub.model.PublishRequest;

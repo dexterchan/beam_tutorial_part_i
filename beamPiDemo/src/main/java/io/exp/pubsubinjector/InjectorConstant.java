@@ -1,4 +1,4 @@
-package io.exp.injector;
+package io.exp.pubsubinjector;
 
 
 import java.util.TimeZone;

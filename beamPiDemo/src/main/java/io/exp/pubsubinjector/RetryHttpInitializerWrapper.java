@@ -1,4 +1,4 @@
-package io.exp.injector;
+package io.exp.pubsubinjector;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
