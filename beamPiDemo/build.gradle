@@ -36,8 +36,8 @@ dependencies {
 }
 
 dependencies {
-    implementation project(':PIModel')
-    implementation project(':KafkaPubSub')
+    compile project(':PIModel')
+    compile project(':KafkaPubSub')
 }
 
 

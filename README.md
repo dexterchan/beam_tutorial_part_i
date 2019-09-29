@@ -33,7 +33,7 @@ gradle -Pdirect clean build
 ```
 Run command:
 ```
-java -classpath build/libs/beamPiDemo-0.1-all.jar io.exp.apachebeam.kafka.BeamPiRun --bootStrapServer=localhost:9092 --inputTopic=pi --outputTopic=piut --output=/tmp/PiQueue
+java -classpath build/libs/beamPiDemo-0.1-all.jar io.exp.apachebeam.kafka.BeamPiRun --bootStrapServer=localhost:9092 --inputTopic=pi --outputTopic=pi_out --output=/tmp/PiQueue
 ```
 
 Kafka Injector:
@@ -41,6 +41,10 @@ Kafka Injector:
 java -classpath build/libs/beamPiDemo-0.1-all.jar io.exp.kafka.Main.KafkaPublisherMain localhost:9092 1 10 100
 ````
 
+Kafka subscribor
+```
+kafkacat -b localhost:9092 -C -t pi_out
+```
 
 ## Flink Runner : Run Text file as I/O
 Build command:

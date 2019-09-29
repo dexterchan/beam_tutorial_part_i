@@ -30,5 +30,5 @@ dependencies {
 }
 
 dependencies {
-    implementation project(':PIModel')
+    compile project(':PIModel')
 }
